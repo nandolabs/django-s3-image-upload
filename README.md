@@ -12,6 +12,7 @@ A professional Django REST API for uploading and managing images with AWS S3 sto
 - **File Validation**: Automatic validation of file size and type
 - **Test Coverage**: Comprehensive pytest test suite
 - **Admin Interface**: Django admin for user and image management
+- **Swagger/OpenAPI Documentation**: Interactive API documentation at `/api/docs/`
 
 ## Tech Stack
 
@@ -23,6 +24,7 @@ A professional Django REST API for uploading and managing images with AWS S3 sto
 - **Database**: PostgreSQL 16+ (psycopg2-binary 2.9.11)
 - **Image Processing**: Pillow 12.0.0
 - **Testing**: pytest 9.0.1, pytest-django 4.11.1
+- **API Documentation**: drf-spectacular 0.29.0 (Swagger/OpenAPI 3.0)
 
 ## Prerequisites
 
@@ -91,6 +93,78 @@ AWS_S3_REGION_NAME=us-east-1
 ```bash
 sudo -u postgres psql
 CREATE DATABASE django_s3_images;
+\q
+```
+
+### 6. Run migrations
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### 7. Create superuser (optional)
+
+```bash
+python manage.py createsuperuser
+```
+
+## Running the Application
+
+### Development Server
+
+```bash
+python manage.py runserver
+```
+
+The API will be available at `http://localhost:8000/`
+
+### Admin Interface
+
+Access the Django admin at `http://localhost:8000/admin/`
+
+## Interactive API Documentation (Swagger)
+
+This project includes **interactive Swagger/OpenAPI documentation** powered by drf-spectacular.
+
+### Accessing Swagger UI
+
+Once the server is running, visit:
+
+**Swagger UI (Recommended):**
+```
+http://localhost:8000/api/docs/
+```
+
+**ReDoc (Alternative):**
+```
+http://localhost:8000/api/redoc/
+```
+
+**OpenAPI Schema:**
+```
+http://localhost:8000/api/schema/
+```
+
+The Swagger UI provides:
+- **Interactive testing**: Try all API endpoints directly in your browser
+- **Request/Response examples**: See expected data formats
+- **Authentication**: Test protected endpoints with JWT tokens
+- **Complete API specification**: Browse all available endpoints with detailed descriptions
+
+### Using Swagger UI
+
+1. Start the Django server: `python manage.py runserver`
+2. Open browser to `http://localhost:8000/api/docs/`
+3. Click on any endpoint to expand details
+4. Click **"Try it out"** to test endpoints
+5. For protected endpoints:
+   - First call `/api/auth/login/` to get JWT tokens
+   - Click the **"Authorize"** button at the top
+   - Enter: `Bearer YOUR_ACCESS_TOKEN`
+   - Now you can test all protected endpoints
+
+## API Documentation
 \q
 ```
 
