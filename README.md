@@ -679,3 +679,7 @@ Portfolio Project - Full Stack Developer
 ## Support
 
 For issues, questions, or contributions, please open an issue on GitHub.
+
+---
+
+*This project is part of the NandoLabs portfolio, showcasing Django REST API development with AWS S3 integration and JWT authentication.*
