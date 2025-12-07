@@ -1,685 +1,139 @@
+
+
 # Django S3 Image Upload Service
 
-A professional Django REST API for uploading and managing images with AWS S3 storage support and JWT authentication.
+## Problem this solves
 
-## Features
+Many applications need to store and serve user-uploaded images (profile pictures, content uploads, media assets, etc.). Handling image uploads, storage, access control, and secure retrieval — especially at scale — can be a complex, error-prone task. This service provides a robust, ready-to-use backend that simplifies image storage by offloading file storage to Amazon S3 (or fallback to local storage), while ensuring secure access and clean management out-of-the-box.
 
-- **JWT Authentication**: Secure user signup/login with JSON Web Tokens
-- **Image Upload**: Upload images to AWS S3 or local storage
-- **User-Based Access**: Each user can only access their own images
-- **RESTful API**: Clean REST API endpoints for all operations
-- **Image Management**: List, view, and delete uploaded images
-- **File Validation**: Automatic validation of file size and type
-- **Test Coverage**: Comprehensive pytest test suite
-- **Admin Interface**: Django admin for user and image management
-- **Swagger/OpenAPI Documentation**: Interactive API documentation at `/api/docs/`
+## Core Features
 
-## Tech Stack
+* Secure user authentication with JSON Web Tokens (JWT) — each user can manage only their own images. ([GitHub][1])
+* Upload images (to S3 or local storage) with automatic validation (file type and size). ([GitHub][1])
+* RESTful API endpoints to upload, list, retrieve, and delete images. ([GitHub][1])
+* File metadata stored in a relational database (PostgreSQL), while actual image binaries are stored on S3 (or filesystem). ([GitHub][1])
+* Admin interface for image/user management (via Django Admin). ([GitHub][1])
+* Optional S3 support — works with local storage out-of-the-box for development or low-scale projects. ([GitHub][1])
+* API documentation via Swagger / OpenAPI at `/api/docs/` for easy integration. ([GitHub][1])
+* Full test coverage (pytest + pytest-django) to ensure reliability. ([GitHub][1])
 
-- **Python**: 3.12.3
-- **Django**: 5.2.8
-- **Django REST Framework**: 3.16.1
-- **JWT Authentication**: djangorestframework-simplejwt 5.5.1
-- **AWS S3 Integration**: boto3 1.41.4, django-storages 1.14.6
-- **Database**: PostgreSQL 16+ (psycopg2-binary 2.9.11)
-- **Image Processing**: Pillow 12.0.0
-- **Testing**: pytest 9.0.1, pytest-django 4.11.1
-- **API Documentation**: drf-spectacular 0.29.0 (Swagger/OpenAPI 3.0)
+## Why this matters for clients on Upwork
 
-## Prerequisites
+* **Time-to-market:** You get a production-ready, secure image upload backend without needing to design or build storage logic from scratch.
+* **Scalability:** With S3 integration and database-backed metadata, the system is ready to handle growth — from small prototypes to large user bases.
+* **Security and compliance:** JWT authentication and per-user access control reduce risk of unauthorized access to user media.
+* **Flexibility:** Since the service supports local storage for development and S3 for production, you can deploy it in any environment (dev, staging, production) easily.
+* **Easy integration:** Clean RESTful API + OpenAPI docs means frontend teams (React, Vue, mobile) or external clients can consume the service without friction.
 
-- Python 3.12 or higher
-- PostgreSQL 16 or higher
-- AWS Account with S3 bucket (optional, can use local storage)
-- Virtual environment tool (venv or virtualenv)
-
-## Installation
-
-### 1. Clone the repository
+## Installation & Setup
 
 ```bash
-git clone <repository-url>
-cd django-s3-image-upload
+git clone https://github.com/nandolabs/django-s3-image-upload.git  
+cd django-s3-image-upload  
+python3 -m venv venv  
+source venv/bin/activate         # On Windows: venv\Scripts\activate  
+pip install -r requirements.txt  
+cp .env.example .env  
 ```
 
-### 2. Create and activate virtual environment
+Then open `.env` and configure variables:
+
+```ini
+# Django settings  
+SECRET_KEY=your-secret-key  
+DEBUG=True  
+ALLOWED_HOSTS=localhost,127.0.0.1  
+
+# Database (PostgreSQL)  
+DB_NAME=your_db_name  
+DB_USER=your_db_user  
+DB_PASSWORD=your_db_password  
+DB_HOST=localhost  
+DB_PORT=5432  
+
+# AWS S3 (optional)  
+USE_S3=False                         # Set to True to enable S3  
+AWS_ACCESS_KEY_ID=your_aws_key  
+AWS_SECRET_ACCESS_KEY=your_aws_secret  
+AWS_STORAGE_BUCKET_NAME=your_bucket_name  
+AWS_S3_REGION_NAME=your_region  
+```
+
+If you use local storage, set `USE_S3=False`; for S3 storage, provide valid AWS credentials and a bucket name. ([GitHub][1])
+
+Next, in your PostgreSQL instance create the database and run migrations:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+createdb your_db_name  
+python manage.py migrate  
+python manage.py createsuperuser   # optional, for admin interface  
 ```
 
-### 3. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Configure environment variables
-
-Copy the example environment file and configure it:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and set your variables:
-
-```env
-# Django Settings
-SECRET_KEY=your-secret-key-here
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-
-# Database Configuration
-DB_NAME=django_s3_images
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_HOST=localhost
-DB_PORT=5432
-
-# AWS S3 Configuration (optional for local development)
-USE_S3=False
-AWS_ACCESS_KEY_ID=your-aws-access-key
-AWS_SECRET_ACCESS_KEY=your-aws-secret-key
-AWS_STORAGE_BUCKET_NAME=your-bucket-name
-AWS_S3_REGION_NAME=us-east-1
-```
-
-**Note**: For local development, set `USE_S3=False` to store images locally in the `media/` directory.
-
-### 5. Create PostgreSQL database
-
-```bash
-sudo -u postgres psql
-CREATE DATABASE django_s3_images;
-\q
-```
-
-### 6. Run migrations
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
-### 7. Create superuser (optional)
-
-```bash
-python manage.py createsuperuser
-```
-
-## Running the Application
-
-### Development Server
+Start the development server:
 
 ```bash
 python manage.py runserver
 ```
 
-The API will be available at `http://localhost:8000/`
+Access the API at `http://localhost:8000/`, and the admin interface at `http://localhost:8000/admin/`.
 
-### Admin Interface
+## Example API Requests
 
-Access the Django admin at `http://localhost:8000/admin/`
-
-## Interactive API Documentation (Swagger)
-
-This project includes **interactive Swagger/OpenAPI documentation** powered by drf-spectacular.
-
-### Accessing Swagger UI
-
-Once the server is running, visit:
-
-**Swagger UI (Recommended):**
-```
-http://localhost:8000/api/docs/
-```
-
-**ReDoc (Alternative):**
-```
-http://localhost:8000/api/redoc/
-```
-
-**OpenAPI Schema:**
-```
-http://localhost:8000/api/schema/
-```
-
-The Swagger UI provides:
-- **Interactive testing**: Try all API endpoints directly in your browser
-- **Request/Response examples**: See expected data formats
-- **Authentication**: Test protected endpoints with JWT tokens
-- **Complete API specification**: Browse all available endpoints with detailed descriptions
-
-### Using Swagger UI
-
-1. Start the Django server: `python manage.py runserver`
-2. Open browser to `http://localhost:8000/api/docs/`
-3. Click on any endpoint to expand details
-4. Click **"Try it out"** to test endpoints
-5. For protected endpoints:
-   - First call `/api/auth/login/` to get JWT tokens
-   - Click the **"Authorize"** button at the top
-   - Enter: `Bearer YOUR_ACCESS_TOKEN`
-   - Now you can test all protected endpoints
-
-## API Documentation
-\q
-```
-
-### 6. Run migrations
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
-### 7. Create superuser (optional)
-
-```bash
-python manage.py createsuperuser
-```
-
-## Running the Application
-
-### Development Server
-
-```bash
-python manage.py runserver
-```
-
-The API will be available at `http://localhost:8000/`
-
-### Admin Interface
-
-Access the Django admin at `http://localhost:8000/admin/`
-
-## API Documentation
-
-### Base URL
+**Upload an image**
 
 ```
-http://localhost:8000/api/
+POST /api/images/  
+Authorization: Bearer <JWT_TOKEN>  
+Content-Type: multipart/form-data  
+
+Form-Data:
+  file: <binary image file>
 ```
 
-### Authentication Endpoints
-
-#### 1. User Signup
-
-Register a new user and receive JWT tokens.
-
-**Endpoint**: `POST /api/auth/signup/`
-
-**Request Body**:
-```json
-{
-  "email": "user@example.com",
-  "username": "johndoe",
-  "password": "SecurePassword123",
-  "password2": "SecurePassword123"
-}
-```
-
-**Response** (201 Created):
-```json
-{
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "username": "johndoe",
-    "date_joined": "2024-01-15T10:30:00Z"
-  },
-  "tokens": {
-    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-    "access": "eyJ0eXAiOiJKV1QiLCJhbGc..."
-  }
-}
-```
-
-**cURL Example**:
-```bash
-curl -X POST http://localhost:8000/api/auth/signup/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "username": "johndoe",
-    "password": "SecurePassword123",
-    "password2": "SecurePassword123"
-  }'
-```
-
-#### 2. User Login
-
-Authenticate and receive JWT tokens.
-
-**Endpoint**: `POST /api/auth/login/`
-
-**Request Body**:
-```json
-{
-  "email": "user@example.com",
-  "password": "SecurePassword123"
-}
-```
-
-**Response** (200 OK):
-```json
-{
-  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-  "access": "eyJ0eXAiOiJKV1QiLCJhbGc..."
-}
-```
-
-**cURL Example**:
-```bash
-curl -X POST http://localhost:8000/api/auth/login/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "SecurePassword123"
-  }'
-```
-
-#### 3. Refresh Token
-
-Get a new access token using the refresh token.
-
-**Endpoint**: `POST /api/auth/token/refresh/`
-
-**Request Body**:
-```json
-{
-  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
-}
-```
-
-**Response** (200 OK):
-```json
-{
-  "access": "eyJ0eXAiOiJKV1QiLCJhbGc..."
-}
-```
-
-### Image Endpoints
-
-All image endpoints require authentication. Include the JWT access token in the Authorization header:
-
-```
-Authorization: Bearer <access_token>
-```
-
-#### 1. Upload Image
-
-Upload a new image (requires authentication).
-
-**Endpoint**: `POST /api/images/upload/`
-
-**Request**: multipart/form-data
-- `image`: Image file (required, max 10MB)
-- `title`: Image title (optional)
-- `description`: Image description (optional)
-
-**Response** (201 Created):
-```json
-{
-  "id": 1,
-  "image": "/media/images/1/uuid-filename.jpg",
-  "title": "My Image",
-  "description": "A beautiful landscape",
-  "uploaded_at": "2024-01-15T10:35:00Z"
-}
-```
-
-**cURL Example**:
-```bash
-curl -X POST http://localhost:8000/api/images/upload/ \
-  -H "Authorization: Bearer <access_token>" \
-  -F "image=@/path/to/image.jpg" \
-  -F "title=My Image" \
-  -F "description=A beautiful landscape"
-```
-
-#### 2. List User's Images
-
-Get all images uploaded by the authenticated user.
-
-**Endpoint**: `GET /api/images/`
-
-**Response** (200 OK):
-```json
-[
-  {
-    "id": 1,
-    "user": {
-      "id": 1,
-      "email": "user@example.com",
-      "username": "johndoe",
-      "date_joined": "2024-01-15T10:30:00Z"
-    },
-    "image": "/media/images/1/uuid-filename.jpg",
-    "image_url": "http://localhost:8000/media/images/1/uuid-filename.jpg",
-    "title": "My Image",
-    "description": "A beautiful landscape",
-    "uploaded_at": "2024-01-15T10:35:00Z",
-    "updated_at": "2024-01-15T10:35:00Z"
-  }
-]
-```
-
-**cURL Example**:
-```bash
-curl -X GET http://localhost:8000/api/images/ \
-  -H "Authorization: Bearer <access_token>"
-```
-
-#### 3. Get Image Detail
-
-Retrieve details of a specific image (owner only).
-
-**Endpoint**: `GET /api/images/<id>/`
-
-**Response** (200 OK):
-```json
-{
-  "id": 1,
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "username": "johndoe",
-    "date_joined": "2024-01-15T10:30:00Z"
-  },
-  "image": "/media/images/1/uuid-filename.jpg",
-  "image_url": "http://localhost:8000/media/images/1/uuid-filename.jpg",
-  "title": "My Image",
-  "description": "A beautiful landscape",
-  "uploaded_at": "2024-01-15T10:35:00Z",
-  "updated_at": "2024-01-15T10:35:00Z"
-}
-```
-
-**cURL Example**:
-```bash
-curl -X GET http://localhost:8000/api/images/1/ \
-  -H "Authorization: Bearer <access_token>"
-```
-
-#### 4. Delete Image
-
-Delete an image (owner only).
-
-**Endpoint**: `DELETE /api/images/<id>/delete/`
-
-**Response** (204 No Content)
-
-**cURL Example**:
-```bash
-curl -X DELETE http://localhost:8000/api/images/1/delete/ \
-  -H "Authorization: Bearer <access_token>"
-```
-
-## Testing
-
-The project includes a comprehensive test suite using pytest.
-
-### Run all tests
-
-```bash
-pytest
-```
-
-### Run with verbose output
-
-```bash
-pytest -v
-```
-
-### Run specific test file
-
-```bash
-pytest users/tests.py
-pytest images/tests.py
-```
-
-### Test Coverage
-
-- **Authentication Tests**: Signup, login, JWT tokens, validation
-- **Image Upload Tests**: Upload, list, detail, delete, file validation
-- **Authorization Tests**: Unauthenticated access, owner-only operations
-
-## AWS S3 Configuration
-
-### Setting up AWS S3
-
-1. **Create an S3 bucket** in your AWS Console
-2. **Create an IAM user** with programmatic access
-3. **Attach the following policy** to the IAM user:
+*Response (JSON):*
 
 ```json
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:DeleteObject",
-        "s3:ListBucket"
-      ],
-      "Resource": [
-        "arn:aws:s3:::your-bucket-name/*",
-        "arn:aws:s3:::your-bucket-name"
-      ]
-    }
-  ]
+  "id": 123,
+  "user": "user_id",
+  "file_name": "my_photo.jpg",
+  "file_url": "https://your-bucket.s3.amazonaws.com/uploads/2025/12/07/uuid-my_photo.jpg",
+  "uploaded_at": "2025-12-07T12:34:56Z"
 }
 ```
 
-4. **Configure bucket CORS** (if accessing from web):
+**List user images**
+
+```
+GET /api/images/  
+Authorization: Bearer <JWT_TOKEN>
+```
+
+*Response:*
 
 ```json
 [
-  {
-    "AllowedHeaders": ["*"],
-    "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
-    "AllowedOrigins": ["*"],
-    "ExposeHeaders": []
-  }
+  { "id": 123, "file_url": "...", "uploaded_at": "..." },
+  { "id": 124, "file_url": "...", "uploaded_at": "..." }
 ]
 ```
 
-5. **Update `.env`** with your AWS credentials:
-
-```env
-USE_S3=True
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
-AWS_STORAGE_BUCKET_NAME=your-bucket-name
-AWS_S3_REGION_NAME=us-east-1
-```
-
-### Using LocalStack for Local S3 Testing
-
-For local development without AWS costs, use LocalStack:
-
-```bash
-# Install LocalStack
-pip install localstack
-
-# Start LocalStack with S3
-localstack start -d
-
-# Create a bucket
-aws --endpoint-url=http://localhost:4566 s3 mb s3://test-bucket
-
-# Update .env
-USE_S3=True
-AWS_S3_ENDPOINT_URL=http://localhost:4566
-AWS_STORAGE_BUCKET_NAME=test-bucket
-```
-
-## Project Structure
+**Delete an image**
 
 ```
-django-s3-image-upload/
-├── config/              # Django project settings
-│   ├── settings.py      # Main settings with S3, JWT, REST Framework
-│   ├── urls.py          # Main URL configuration
-│   └── wsgi.py
-├── users/               # User authentication app
-│   ├── models.py        # Custom User model with email auth
-│   ├── serializers.py   # User serializers for signup/login
-│   ├── views.py         # Authentication views
-│   ├── urls.py          # Auth endpoints
-│   ├── admin.py         # User admin configuration
-│   └── tests.py         # Authentication tests
-├── images/              # Image management app
-│   ├── models.py        # Image model with S3 support
-│   ├── serializers.py   # Image serializers with validation
-│   ├── views.py         # Image CRUD views
-│   ├── urls.py          # Image endpoints
-│   ├── admin.py         # Image admin configuration
-│   └── tests.py         # Image upload tests
-├── media/               # Local media files (if USE_S3=False)
-├── venv/                # Virtual environment
-├── .env                 # Environment variables (not in git)
-├── .env.example         # Environment template
-├── .gitignore           # Git ignore rules
-├── requirements.txt     # Python dependencies
-├── pytest.ini           # Pytest configuration
-├── conftest.py          # Pytest fixtures
-├── manage.py            # Django management script
-└── README.md            # This file
+DELETE /api/images/123/  
+Authorization: Bearer <JWT_TOKEN>
 ```
 
-## Image Storage
+*Response:* HTTP 204 No Content
 
-### Local Storage (Development)
+## Screenshot
 
-When `USE_S3=False` in `.env`:
-- Images stored in `media/images/{user_id}/` directory
-- Accessed via `/media/` URL path
-- Files persist on local filesystem
+* Screenshot of the Swagger / OpenAPI API docs page (e.g. at `/api/docs/`)
+![alt text](../support_files_for_django/swagger_documentation.png)
 
-### S3 Storage (Production)
-
-When `USE_S3=True` in `.env`:
-- Images uploaded to AWS S3 bucket
-- Path: `images/{user_id}/{uuid}_{filename}`
-- Accessed via S3 URL or CloudFront CDN
-- Files stored in cloud with high availability
-
-## Security Features
-
-- **JWT Authentication**: Secure token-based authentication
-- **Password Validation**: Django's built-in password validators
-- **File Validation**: Size limit (10MB) and type checking
-- **User Isolation**: Users can only access their own images
-- **Environment Variables**: Sensitive data not hardcoded
-- **CORS Ready**: Can be configured for cross-origin requests
-
-## Deployment Considerations
-
-### Environment Variables for Production
-
-```env
-DEBUG=False
-SECRET_KEY=strong-random-secret-key
-ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
-USE_S3=True
-# ... AWS credentials
-```
-
-### Database
-
-- Use managed PostgreSQL service (AWS RDS, DigitalOcean)
-- Enable SSL connections
-- Regular backups
-
-### Static Files
-
-```bash
-python manage.py collectstatic
-```
-
-### WSGI Server
-
-Use Gunicorn or uWSGI:
-
-```bash
-pip install gunicorn
-gunicorn config.wsgi:application --bind 0.0.0.0:8000
-```
-
-### Reverse Proxy
-
-Configure Nginx or Apache as reverse proxy with SSL.
-
-## API Response Formats
-
-### Success Response
-
-```json
-{
-  "id": 1,
-  "field": "value",
-  ...
-}
-```
-
-### Error Response
-
-```json
-{
-  "field": [
-    "Error message"
-  ]
-}
-```
-
-### Validation Error
-
-```json
-{
-  "detail": "Authentication credentials were not provided."
-}
-```
-
-## JWT Token Lifetime
-
-- **Access Token**: 24 hours
-- **Refresh Token**: 7 days
-
-Configure in `config/settings.py`:
-
-```python
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-}
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is open source and available under the MIT License.
-
-## Author
-
-Portfolio Project - Full Stack Developer
-
-## Support
-
-For issues, questions, or contributions, please open an issue on GitHub.
 
 ---
 
-*This project is part of the NandoLabs portfolio, showcasing Django REST API development with AWS S3 integration and JWT authentication.*
+Thank you for considering —
+**NandoLabs** 🚀
