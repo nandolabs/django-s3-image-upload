@@ -17,7 +17,8 @@ Many applications need to store and serve user-uploaded images (profile pictures
 * API documentation via Swagger / OpenAPI at `/api/docs/` for easy integration. ([GitHub][1])
 * Full test coverage (pytest + pytest-django) to ensure reliability. ([GitHub][1])
 
-## Why this matters for clients on Upwork
+## Why This Matters for Your Project
+
 
 * **Time-to-market:** You get a production-ready, secure image upload backend without needing to design or build storage logic from scratch.
 * **Scalability:** With S3 integration and database-backed metadata, the system is ready to handle growth — from small prototypes to large user bases.
@@ -127,13 +128,13 @@ Authorization: Bearer <JWT_TOKEN>
 
 *Response:* HTTP 204 No Content
 
-## Screenshot
+## API Documentation Screenshot
 
-* Screenshot of the Swagger / OpenAPI API docs page (e.g. at `/api/docs/`)
-![alt text](../support_files_for_django/swagger_documentation.png)
+![Django S3 Image Upload Swagger](./media/docs/swagger_documentation.png)
 
+## API Response
 
+![Django S3 Image Upload Swagger](./media/docs/request.png)
 ---
 
-Thank you for considering —
-**NandoLabs** 🚀
+*This project is part of the NandoLabs portfolio, showcasing Django REST API development with AWS S3 integration and JWT authentication.*
