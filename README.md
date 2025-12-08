@@ -130,11 +130,11 @@ Authorization: Bearer <JWT_TOKEN>
 
 ## API Documentation Screenshot
 
-![Django S3 Image Upload Swagger](./media/docs/swagger_documentation.png)
+![Django S3 Image Upload Swagger](./images/docs/swagger_documentation.png)
 
 ## API Response
 
-![Django S3 Image Upload Swagger](./media/docs/request.png)
+![Django S3 Image Upload Swagger](./images/docs/request.png)
 ---
 
 *This project is part of the NandoLabs portfolio, showcasing Django REST API development with AWS S3 integration and JWT authentication.*
