@@ -1,5 +1,3 @@
-
-
 # Django S3 Image Upload Service
 
 ## Problem this solves
@@ -8,14 +6,14 @@ Many applications need to store and serve user-uploaded images (profile pictures
 
 ## Core Features
 
-* Secure user authentication with JSON Web Tokens (JWT) — each user can manage only their own images. ([GitHub][1])
-* Upload images (to S3 or local storage) with automatic validation (file type and size). ([GitHub][1])
-* RESTful API endpoints to upload, list, retrieve, and delete images. ([GitHub][1])
-* File metadata stored in a relational database (PostgreSQL), while actual image binaries are stored on S3 (or filesystem). ([GitHub][1])
-* Admin interface for image/user management (via Django Admin). ([GitHub][1])
-* Optional S3 support — works with local storage out-of-the-box for development or low-scale projects. ([GitHub][1])
-* API documentation via Swagger / OpenAPI at `/api/docs/` for easy integration. ([GitHub][1])
-* Full test coverage (pytest + pytest-django) to ensure reliability. ([GitHub][1])
+* Secure user authentication with JSON Web Tokens (JWT) — each user can manage only their own images.
+* Upload images (to S3 or local storage) with automatic validation (file type and size).
+* RESTful API endpoints to upload, list, retrieve, and delete images.
+* File metadata stored in a relational database (PostgreSQL), while actual image binaries are stored on S3 (or filesystem).
+* Admin interface for image/user management (via Django Admin).
+* Optional S3 support — works with local storage out-of-the-box for development or low-scale projects.
+* API documentation via Swagger / OpenAPI at `/api/docs/` for easy integration.
+* Full test coverage (pytest + pytest-django) to ensure reliability.
 
 ## Why This Matters for Your Project
 
@@ -60,7 +58,7 @@ AWS_STORAGE_BUCKET_NAME=your_bucket_name
 AWS_S3_REGION_NAME=your_region  
 ```
 
-If you use local storage, set `USE_S3=False`; for S3 storage, provide valid AWS credentials and a bucket name. ([GitHub][1])
+If you use local storage, set `USE_S3=False`; for S3 storage, provide valid AWS credentials and a bucket name.
 
 Next, in your PostgreSQL instance create the database and run migrations:
 
