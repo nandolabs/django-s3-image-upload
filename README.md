@@ -24,6 +24,14 @@ Many applications need to store and serve user-uploaded images (profile pictures
 * **Flexibility:** Since the service supports local storage for development and S3 for production, you can deploy it in any environment (dev, staging, production) easily.
 * **Easy integration:** Clean RESTful API + OpenAPI docs means frontend teams (React, Vue, mobile) or external clients can consume the service without friction.
 
+## Common Issues This Prevents or Fixes
+* Broken S3 uploads in production
+* Incorrect file permissions
+* Unauthorized access to user files
+* Multipart/form-data parsing errors
+* Environment-specific storage bugs
+
+
 ## Installation & Setup
 
 ```bash
